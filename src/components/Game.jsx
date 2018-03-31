@@ -5,10 +5,10 @@ class Question extends Component {
   render() {
     const { firstNum, secondNum, givenAnswer, onKeyPress, onChange } = this.props;
     return (
-      <div className='game-screen__question'>
-        <input className='game-screen__number' value={firstNum} readOnly />
-        x <input className='game-screen__number' value={secondNum} readOnly />
-        = <input className='game-screen__number' type='number' value={givenAnswer} onKeyPress={onKeyPress} onChange={onChange} />
+      <div className='question'>
+        <input className='question__number' value={firstNum} readOnly />
+        &nbsp;x <input className='question__number--second' value={secondNum} readOnly />
+        &nbsp;= <input className='question__number--answer' type='number' value={givenAnswer} onKeyPress={onKeyPress} onChange={onChange} />
       </div>
     )
   }
@@ -17,12 +17,12 @@ class Question extends Component {
 class Score extends Component {
   render() {
     const { mins, secs, numAnswered, numQuestions } = this.props;
-    const time = `${mins} minutes ${secs} seconds remaining`;
+    const time = `${mins} minutes ${secs} seconds`;
     return (
-      <div className='game-screen__score'>
+      <div className='score'>
         <p>
-          <span className='game-screen__score-time'>{time}</span>
-          <span className='game-screen__score-value'>{numAnswered} of {numQuestions} answered</span>
+          <span className='score__time'>{time}</span><br/>
+          <span className='score__value'>{numAnswered} of {numQuestions} answered</span>
         </p>
       </div>
     )
@@ -43,15 +43,15 @@ class Settings extends Component {
   render() {
     const { levels, runTimer } = this.props;
     const levelItems = Object.keys(levels).map((level, idx) =>
-      <li key={level}>{level} <input ref={level} type='checkbox' defaultChecked={levels[level]}/></li>
+      <li className='settings__level_item' key={level}>{level} <input ref={level} className='checkbox' type='checkbox' defaultChecked={levels[level]}/></li>
     );
     return (
-      <div className='game-screen__settings'>
+      <div className='settings'>
         <form onSubmit={this.onSubmit}>
-          <ul>{levelItems}</ul>
+          <ul className='settings__levels'>{levelItems}</ul>
           <p>
-            <input type='checkbox' ref='runTimer' defaultChecked={runTimer}/>
-            <input type="submit" value="Go!" />
+            <input className='checkbox' type='checkbox' ref='runTimer' defaultChecked={runTimer}/>
+            <input className='button' type="submit" value="Go!" />
           </p>
         </form>
       </div>
@@ -63,12 +63,12 @@ class PreviousAnswers extends Component {
   render() {
     const { answers } = this.props;
     const answerItems = answers.map((answer, idx) =>
-      <li key={idx}>{answer.firstNum} x {answer.secondNum} = {answer.givenAnswer}
-        <span className={'game-screen__answer--' + (answer.givenAnswer === answer.actual ? 'correct' : 'wrong')}>{answer.givenAnswer === answer.actual ? '' : answer.actual}</span></li>
+      <li className='answers__list-item' key={idx}>{answer.firstNum} x {answer.secondNum} = {answer.givenAnswer}
+        <span className={'answers__answer--' + (answer.givenAnswer === answer.actual ? 'correct' : 'wrong')}>{answer.givenAnswer === answer.actual ? '' : answer.actual}</span></li>
     );
     return (
-      <div className='game-screen__answers'>
-        <ul>{answerItems}</ul>
+      <div className='answers'>
+        <ul className='answers__list'>{answerItems}</ul>
       </div>
     )
   }
@@ -225,7 +225,7 @@ class Game extends Component {
     const mins = Math.floor(left / (60 * 1000));
     const secs = Math.floor((left - (mins * 60 * 1000)) / 1000);
     return (
-      <div className='game-screen'>
+      <div className='game'>
         <Settings
           levels={levels}
           runTimer={runTimer}
