@@ -3,37 +3,58 @@ import levelData from '../data/levels';
 
 class Question extends Component {
   render() {
-    const { firstNum, secondNum, givenAnswer, onKeyPress, onChange } = this.props;
+    const {
+      firstNum,
+      secondNum,
+      givenAnswer,
+      onKeyPress,
+      onChange,
+    } = this.props;
     return (
-      <div className='question'>
-        <input className='question__number' value={firstNum} readOnly />
-        &nbsp;x <input className='question__number--second' value={secondNum} readOnly />
-        &nbsp;= <input className='question__number--answer' type='number' value={givenAnswer} onKeyPress={onKeyPress} onChange={onChange} />
+      <div className="Question">
+        <input className="Question__number" value={firstNum} readOnly />
+        &nbsp;x{' '}
+        <input
+          className="Question__number--second"
+          value={secondNum}
+          readOnly
+        />
+        &nbsp;={' '}
+        <input
+          className="Question__number--answer"
+          type="number"
+          value={givenAnswer}
+          onKeyPress={onKeyPress}
+          onChange={onChange}
+        />
       </div>
-    )
+    );
   }
-};
+}
 
 class Score extends Component {
   render() {
     const { mins, secs, numAnswered, numQuestions } = this.props;
     const time = `${mins} minutes ${secs} seconds`;
     return (
-      <div className='score'>
+      <div className="Score">
         <p>
-          <span className='score__time'>{time}</span><br/>
-          <span className='score__value'>{numAnswered} of {numQuestions} answered</span>
+          <span className="Score__time">{time}</span>
+          <br />
+          <span className="Score__value">
+            {numAnswered} of {numQuestions} answered
+          </span>
         </p>
       </div>
-    )
+    );
   }
-};
+}
 
 class Settings extends Component {
   onSubmit = (event) => {
     event.preventDefault();
     const settings = {};
-    for(const ref in this.refs) {
+    for (const ref in this.refs) {
       settings[ref] = this.refs[ref].checked;
     }
     const { onSubmit } = this.props;
@@ -42,53 +63,75 @@ class Settings extends Component {
 
   render() {
     const { levels, runTimer } = this.props;
-    const levelItems = Object.keys(levels).map((level, idx) =>
-      <li className='settings__level_item' key={level}>{level} <input ref={level} className='checkbox' type='checkbox' defaultChecked={levels[level]}/></li>
-    );
+    const levelItems = Object.keys(levels).map((level, idx) => (
+      <li className="Settings__level_item" key={level}>
+        {level}{' '}
+        <input
+          ref={level}
+          className="checkbox"
+          type="checkbox"
+          defaultChecked={levels[level]}
+        />
+      </li>
+    ));
     return (
-      <div className='settings'>
+      <div className="Settings">
         <form onSubmit={this.onSubmit}>
-          <ul className='settings__levels'>{levelItems}</ul>
+          <ul className="Settings__levels">{levelItems}</ul>
           <p>
-            <input className='checkbox' type='checkbox' ref='runTimer' defaultChecked={runTimer}/>
-            <input className='button' type="submit" value="Go!" />
+            <input
+              className="checkbox"
+              type="checkbox"
+              ref="runTimer"
+              defaultChecked={runTimer}
+            />
+            <input className="button" type="submit" value="Go!" />
           </p>
         </form>
       </div>
-    )
+    );
   }
 }
 
 class PreviousAnswers extends Component {
   render() {
     const { answers } = this.props;
-    const answerItems = answers.map((answer, idx) =>
-      <li className='answers__list-item' key={idx}>{answer.firstNum} x {answer.secondNum} = {answer.givenAnswer}
-        <span className={'answers__answer--' + (answer.givenAnswer === answer.actual ? 'correct' : 'wrong')}>{answer.givenAnswer === answer.actual ? '' : answer.actual}</span></li>
-    );
+    const answerItems = answers.map((answer, idx) => (
+      <li className="Answers__list-item" key={idx}>
+        {answer.firstNum} x {answer.secondNum} = {answer.givenAnswer}
+        <span
+          className={
+            'Answers__answer--' +
+            (answer.givenAnswer === answer.actual ? 'correct' : 'wrong')
+          }
+        >
+          {answer.givenAnswer === answer.actual ? '' : answer.actual}
+        </span>
+      </li>
+    ));
     return (
-      <div className='answers'>
-        <ul className='answers__list'>{answerItems}</ul>
+      <div className="Answers">
+        <ul className="Answers__list">{answerItems}</ul>
       </div>
-    )
+    );
   }
 }
 
 const shuffle = (array) => {
-    let counter = array.length;
-    const result = array.slice(0);
-    // While there are elements in the array
-    while (counter > 0) {
-        // Pick a random index
-        let index = Math.floor(Math.random() * counter);
-        // Decrease counter by 1
-        counter--;
-        // And swap the last element with it
-        [result[counter], result[index]] = [result[index], result[counter]];
-    }
+  let counter = array.length;
+  const result = array.slice(0);
+  // While there are elements in the array
+  while (counter > 0) {
+    // Pick a random index
+    let index = Math.floor(Math.random() * counter);
+    // Decrease counter by 1
+    counter--;
+    // And swap the last element with it
+    [result[counter], result[index]] = [result[index], result[counter]];
+  }
 
-    return result;
-}
+  return result;
+};
 
 class Game extends Component {
   constructor(props) {
@@ -114,7 +157,7 @@ class Game extends Component {
 
     Object.keys(levelData).forEach((level, idx) => {
       this.state.levels[level] = idx < 5 ? true : false;
-    })
+    });
   }
 
   onStartGame = (settings) => {
@@ -145,7 +188,7 @@ class Game extends Component {
       playing: true,
       timer,
       questions,
-    })
+    });
   };
 
   onTimerUpdate = () => {
@@ -171,22 +214,21 @@ class Game extends Component {
       timer,
     });
     // clear values?
-
   };
 
   nextQuestion = (questions) => {
     if (questions.length) {
-      const [ firstNum, secondNum ] = questions.shift();
+      const [firstNum, secondNum] = questions.shift();
       this.setState({
         firstNum,
         secondNum,
         givenAnswer: '',
-      })
+      });
     } else {
       this.finished();
     }
     return questions;
-  }
+  };
 
   onKeyPress = (event) => {
     if (event.key === 'Enter') {
@@ -202,12 +244,11 @@ class Game extends Component {
         secondNum: this.state.secondNum,
         givenAnswer,
         actual,
-      }
+      };
       console.log('answer given ', answer);
       answers.push(answer);
       questions = this.nextQuestion(questions);
       this.setState({ questions, answers });
-
     }
   };
 
@@ -216,16 +257,24 @@ class Game extends Component {
     this.setState({
       givenAnswer,
     });
-
-  }
+  };
 
   render() {
-    const { firstNum, secondNum, givenAnswer, levels, runTimer, answers, timer, numQuestions } = this.state;
+    const {
+      firstNum,
+      secondNum,
+      givenAnswer,
+      levels,
+      runTimer,
+      answers,
+      timer,
+      numQuestions,
+    } = this.state;
     const { left } = timer;
     const mins = Math.floor(left / (60 * 1000));
-    const secs = Math.floor((left - (mins * 60 * 1000)) / 1000);
+    const secs = Math.floor((left - mins * 60 * 1000) / 1000);
     return (
-      <div className='game'>
+      <div className="game">
         <Settings
           levels={levels}
           runTimer={runTimer}
@@ -236,15 +285,15 @@ class Game extends Component {
           secondNum={secondNum}
           givenAnswer={givenAnswer}
           onChange={this.onChange}
-          onKeyPress={this.onKeyPress}/>
+          onKeyPress={this.onKeyPress}
+        />
         <Score
           mins={mins}
           secs={secs}
           numAnswered={answers.length}
-          numQuestions={numQuestions}/>
-        <PreviousAnswers
-          answers={answers}
-          />
+          numQuestions={numQuestions}
+        />
+        <PreviousAnswers answers={answers} />
       </div>
     );
   }
