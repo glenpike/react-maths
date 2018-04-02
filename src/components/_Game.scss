@@ -1,0 +1,60 @@
+//FIXME naming and nesting.
+.Settings {
+  &__levels,
+  &__extra {
+    list-style-type: none;
+  }
+  &__levels-item,
+  &__extra-item {
+    margin-bottom: 0.25rem;
+  }
+}
+
+.Question {
+  padding: $base-line-height / 2 $base-line-height;
+  &__number {
+    font-weight: 700;
+    width: 2rem;
+    min-width: 2rem;
+    padding: $base-font-size / 4 $base-font-size / 2;
+    background-color: $secondary;
+    border-radius: $base-font-size / 4;
+  }
+  // This is the text / number input - style separately
+  &__number--answer {
+
+  }
+}
+
+.Score {
+  padding: 0 $base-line-height;
+}
+
+.Answers {
+  background-color: $background2;
+  margin: $base-line-height;
+  border-radius: $base-font-size / 4;
+  &__list {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+  }
+  &__list-item {
+    margin-bottom: 4px;
+    padding: $base-font-size / 8 $base-font-size / 2;
+    border-radius: 4px;
+  }
+  &__answer {
+    margin-left: $base-font-size;
+  }
+}
+// FIXME - naming!
+.wrong .Answers__answer::before {
+  content: 'X';
+  padding: 0 8px;
+  display: inline-block;
+  margin-right: $base-font-size;
+  font-weight: bold;
+  background-color: $tertiary;
+  border-radius: 4px;
+}
