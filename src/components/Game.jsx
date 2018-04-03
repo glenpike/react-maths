@@ -14,7 +14,7 @@ export class Question extends Component {
       <div className="Question">
         <span className="Question__number">{firstNum}</span>
         &nbsp;x&nbsp;
-        <span className="Question__number t-secondNum">{secondNum}</span>
+        <span className="Question__number">{secondNum}</span>
         &nbsp;=&nbsp;
         <input
           className="Question__number--answer text-input"
