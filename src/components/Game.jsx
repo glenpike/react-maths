@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import levelData from '../data/levels';
 
-class Question extends Component {
+export class Question extends Component {
   render() {
     const {
       firstNum,
@@ -14,7 +14,7 @@ class Question extends Component {
       <div className="Question">
         <span className="Question__number">{firstNum}</span>
         &nbsp;x&nbsp;
-        <span className="Question__number">{secondNum}</span>
+        <span className="Question__number t-secondNum">{secondNum}</span>
         &nbsp;=&nbsp;
         <input
           className="Question__number--answer text-input"
@@ -28,23 +28,23 @@ class Question extends Component {
   }
 }
 
-class Score extends Component {
+export class Score extends Component {
   render() {
     const { mins, secs, numAnswered, numQuestions } = this.props;
     const time = `${mins} minutes ${secs} seconds`;
     return (
       <div className="Score">
         <span className="Score__time">{time}</span>
-          <br />
-          <span className="Score__value">
-            {numAnswered} of {numQuestions} answered
-          </span>
+        <br />
+        <span className="Score__value">
+          {numAnswered} of {numQuestions} answered
+        </span>
       </div>
     );
   }
 }
 
-class Settings extends Component {
+export class Settings extends Component {
   onSubmit = (event) => {
     event.preventDefault();
     const settings = {};
@@ -94,7 +94,7 @@ class Settings extends Component {
   }
 }
 
-class Answers extends Component {
+export class Answers extends Component {
   render() {
     const { answers } = this.props;
     const answerItems = answers.map((answer, idx) => (
@@ -137,7 +137,7 @@ const shuffle = (array) => {
   return result;
 };
 
-class Game extends Component {
+export default class Game extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -278,29 +278,33 @@ class Game extends Component {
     const mins = Math.floor(left / (60 * 1000));
     const secs = Math.floor((left - mins * 60 * 1000) / 1000);
     return (
-      <div className="game">
-        <Settings
-          levels={levels}
-          runTimer={runTimer}
-          onSubmit={this.onStartGame}
-        />
-        <Question
-          firstNum={firstNum}
-          secondNum={secondNum}
-          givenAnswer={givenAnswer}
-          onChange={this.onChange}
-          onKeyPress={this.onKeyPress}
-        />
-        <Score
-          mins={mins}
-          secs={secs}
-          numAnswered={answers.length}
-          numQuestions={numQuestions}
-        />
-        <Answers answers={answers} />
+      <div className="Game grid-container">
+        <div className="col-1">
+          <Settings
+            levels={levels}
+            runTimer={runTimer}
+            onSubmit={this.onStartGame}
+          />
+        </div>
+        <div className="col-2">
+          <Question
+            firstNum={firstNum}
+            secondNum={secondNum}
+            givenAnswer={givenAnswer}
+            onChange={this.onChange}
+            onKeyPress={this.onKeyPress}
+          />
+          <Score
+            mins={mins}
+            secs={secs}
+            numAnswered={answers.length}
+            numQuestions={numQuestions}
+          />
+        </div>
+        <div className="col-3">
+          <Answers answers={answers} />
+        </div>
       </div>
     );
   }
 }
-
-export default Game;
