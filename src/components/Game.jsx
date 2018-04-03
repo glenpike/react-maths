@@ -145,7 +145,6 @@ export default class Game extends Component {
       secondNum: '',
       givenAnswer: '',
       levels: {},
-      playing: false,
       runTimer: false,
       answers: [],
       numQuestions: 10,
@@ -189,7 +188,6 @@ export default class Game extends Component {
     timer.left = allowed;
     timer.finished = false;
     this.setState({
-      playing: true,
       timer,
       questions,
     });
@@ -207,14 +205,19 @@ export default class Game extends Component {
     }
   };
 
+  isFinished = () => {
+    const { timer: { finished } } = this.state;
+    return finished;
+  };
+
   finished = () => {
     // stop the timer.
     const { timer } = this.state;
     clearInterval(timer.interval);
     timer.interval = null;
+    timer.finished = true;
     // show 'finished!'
     this.setState({
-      playing: false,
       timer,
     });
     // clear values?
@@ -231,11 +234,12 @@ export default class Game extends Component {
     } else {
       this.finished();
     }
+    console.log('questions left ', questions.length);
     return questions;
   };
 
   onKeyPress = (event) => {
-    if (event.key === 'Enter') {
+    if (event.key === 'Enter' && !this.isFinished()) {
       event.preventDefault();
       const givenAnswer = +event.target.value;
       console.log(`enter key: ${givenAnswer}`);
