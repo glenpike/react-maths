@@ -18,7 +18,7 @@ input[type="search"] {
 }
 
 html{
-    font: 400 1.5em/1.5 $baseFontFamily;
+  font: 400 1.5em/1.5 $baseFontFamily;
 }
 
 body {
@@ -30,8 +30,16 @@ h1,h2,h3,h4,h5,h6,hgroup,
 ul,ol,dd,
 p,figure,
 pre,table,fieldset,hr{
-    margin-bottom: $baseLineHeight;
-    margin-bottom: 1.5rem;
+  margin-bottom: $baseLineHeight;
+  margin-bottom: 1.5rem;
+}
+
+ul {
+  list-style-type: none;
+}
+
+li {
+  margin-bottom: 0.25rem
 }
 
 /* OBJECTS */

@@ -4,10 +4,10 @@
   &__extra {
     list-style-type: none;
   }
-  &__levels-item,
-  &__extra-item {
-    margin-bottom: 0.25rem;
-  }
+  // &__levels-item,
+  // &__extra-item {
+  //   margin-bottom: 0.25rem;
+  // }
 }
 
 .Question {
@@ -31,20 +31,15 @@
 }
 
 .Answers {
-  background-color: $altBackgroundColour;
   margin: $baseLineHeight;
   border-radius: $baseFontSize / 4;
-  &__list {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-  }
   &__list-item {
-    margin-bottom: 4px;
+    background-color: $altBackgroundColour;
     padding: $baseFontSize / 8 $baseFontSize / 2;
     border-radius: 4px;
   }
   &__answer {
+    font-size: 0.8rem;
     margin-left: $baseFontSize;
   }
 }
@@ -55,6 +50,7 @@
   display: inline-block;
   margin-right: $baseFontSize;
   font-weight: bold;
+  font-size: 1rem;
   background-color: $tertiaryHue;
   border-radius: 4px;
 }
