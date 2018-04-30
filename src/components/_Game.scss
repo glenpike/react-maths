@@ -33,6 +33,9 @@
 .Answers {
   margin: $baseLineHeight;
   border-radius: $baseFontSize / 4;
+  &__list {
+    padding: 0;
+  }
   &__list-item {
     background-color: $altBackgroundColour;
     padding: $baseFontSize / 8 $baseFontSize / 2;
@@ -41,16 +44,28 @@
   &__answer {
     font-size: 0.8rem;
     margin-left: $baseFontSize;
+    position: relative;
   }
 }
-// FIXME - naming!
+
 .wrong .Answers__answer::before {
-  content: 'X';
-  padding: 0 8px;
-  display: inline-block;
+  content: '\274C';
   margin-right: $baseFontSize;
   font-weight: bold;
   font-size: 1rem;
-  background-color: $tertiaryHue;
-  border-radius: 4px;
+  color: $tertiaryHue;
+}
+
+.correct .Answers__answer::before {
+  content: '\2713';
+  margin-right: $baseFontSize;
+  font-weight: bold;
+  font-size: 1rem;
+  color: $primaryHue;
+}
+
+.HighScore {
+  &__title {
+    padding-left: 1.7rem;
+  }
 }

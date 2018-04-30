@@ -28,14 +28,12 @@ export class Question extends Component {
   }
 }
 
-// TODO: refactor these 2 into single or nested component?
 export class Score extends Component {
   render() {
-    const { mins, secs, numAnswered, numQuestions } = this.props;
-    const time = `${mins} minutes ${secs} seconds`;
+    const { time, numAnswered, numQuestions } = this.props;
     return (
       <div className="Score">
-        <span className="Score__time">{time}</span>
+        <span className="Score__time">{msToMinsAndSecsStr(time)}</span>
         <br />
         <span className="Score__value">
           {numAnswered} of {numQuestions} answered
@@ -47,11 +45,37 @@ export class Score extends Component {
 
 export class LastGameScore extends Component {
   render() {
+    const { time, answers } = this.props;
+    const numCorrect = answers.reduce((total, a) => {
+      if (a.givenAnswer === a.actual) {
+        total += 1;
+      }
+      return total;
+    }, 0);
     return (
       <div className="Score">
-        Congratulations, you got 9 out of 10 right! Your time was... (Only add
-        to high-scores if all correct) Time + accuracy needs to account for
-        score!
+        Congratulations, you got{' '}
+        <span className="Score__value">
+          {numCorrect} out of {answers.length} right
+        </span>
+        <br/>in <span className="Score__time">{msToMinsAndSecsStr(time)}</span>!
+      </div>
+    );
+  }
+}
+
+export class HighScores extends Component {
+  render() {
+    const { fastestTimes } = this.props;
+    const times = fastestTimes.map((time, idx) => (
+      <li className="HighScore-item" key={idx}>
+        {idx + 1}: {msToMinsAndSecsStr(time)}
+      </li>
+    ));
+    return (
+      <div>
+        <p className="HighScore__title">Fastest Times</p>
+        <ul className="HighScore">{times}</ul>
       </div>
     );
   }
@@ -131,6 +155,17 @@ export class Answers extends Component {
   }
 }
 
+const msToMinsAndSecs = (time) => {
+  const mins = Math.floor(time / (60 * 1000));
+  const secs = Math.floor((time - mins * 60 * 1000) / 1000);
+  return { mins, secs };
+};
+
+const msToMinsAndSecsStr = (time) => {
+  const { mins, secs } = msToMinsAndSecs(time);
+  return `${mins} minutes ${secs} seconds`;
+};
+
 const shuffle = (array) => {
   let counter = array.length;
   const result = array.slice(0);
@@ -161,6 +196,8 @@ const GameStates = {
   STATE_FINISHED: 'STATE_FINISHED',
 };
 
+const MAX_HIGH_SCORES = 5;
+
 export default class Game extends Component {
   constructor(props) {
     super(props);
@@ -172,6 +209,9 @@ export default class Game extends Component {
       answers: [],
       numQuestions: 10,
       questions: [],
+      stats: {},
+      fastestTimes: [],
+      newFastestTime: false,
       gameState: GameStates.STATE_INITIAL,
       timer: {
         resolution: 100,
@@ -186,6 +226,19 @@ export default class Game extends Component {
     } catch (e) {
       savedLevels = [];
       console.log("Couldn't load level data ", e);
+    }
+
+    try {
+      this.state.stats = JSON.parse(localStorage.getItem('stats')) || {};
+    } catch (e) {
+      console.log("Couldn't load stats data ", e);
+    }
+
+    try {
+      this.state.fastestTimes =
+        JSON.parse(localStorage.getItem('fastestTimes')) || [];
+    } catch (e) {
+      console.log("Couldn't load fastestTimes data ", e);
     }
 
     Object.keys(levelData).forEach((level, idx) => {
@@ -250,7 +303,7 @@ export default class Game extends Component {
         questions,
         firstNum,
         secondNum,
-        givenAnswer: '',
+        givenAnswer: '', // TODO - find better way to fix rendering empty input?
       });
     }
   };
@@ -262,7 +315,6 @@ export default class Game extends Component {
     ) {
       event.preventDefault();
       const givenAnswer = +event.target.value;
-      console.log(`enter key: ${givenAnswer}`);
       const { firstNum, secondNum, answers } = this.state;
       let { questions } = this.state;
       const actual = firstNum * secondNum;
@@ -273,7 +325,6 @@ export default class Game extends Component {
         givenAnswer,
         actual,
       };
-      console.log('answer given ', answer);
       answers.push(answer);
       this.setState({ answers });
       if (questions.length) {
@@ -284,19 +335,87 @@ export default class Game extends Component {
     }
   };
 
-  finishGame = () => {
-    // disable inputs / state.
-    const gameState = GameStates.STATE_FINISHED;
-    // stop clock.
-    const { timer: { interval } } = this.state;
-    if (interval) {
-      clearInterval(interval);
+  checkScores = () => {
+    const { answers, stats } = this.state;
+
+    // Add to stats whilst checking if all correct.
+    let allCorrect = true;
+    answers.forEach(({ firstNum, secondNum, givenAnswer, actual }) => {
+      if (!stats[secondNum]) {
+        stats[secondNum] = {};
+      }
+      const stat = stats[secondNum][firstNum] || { correct: 0, wrong: 0 };
+      if (givenAnswer === actual) {
+        stat.correct += 1;
+      } else {
+        stat.wrong += 1;
+        allCorrect = false;
+      }
+      stats[secondNum][firstNum] = stat;
+    });
+
+    try {
+      localStorage.setItem('stats', JSON.stringify(stats));
+    } catch (e) {
+      console.log("Couldn't save stats data ", e);
     }
-    // check if all correct - shows in final score.
-    // check if time is faster than others.
-    // save 'stats';
+
+    if (allCorrect) {
+      this.updateFastestTimes();
+    }
+
+    this.setState({
+      stats,
+    });
+  };
+
+  // TODO: seem to have an issue with >5 times!
+  updateFastestTimes = () => {
+    const { fastestTimes, timer: { lastUpdate } } = this.state;
+    const updatedFastestTimes = fastestTimes.slice(0);
+    let newFastestTime = false;
+    for (let i = 0; i < updatedFastestTimes.length; i++) {
+      if (lastUpdate < updatedFastestTimes[i]) {
+        updatedFastestTimes.splice(i, 0, lastUpdate);
+        updatedFastestTimes.slice(0, MAX_HIGH_SCORES);
+        newFastestTime = true;
+        break;
+      }
+    }
+    if (
+      updatedFastestTimes.length === fastestTimes.length &&
+      updatedFastestTimes.length < MAX_HIGH_SCORES
+    ) {
+      updatedFastestTimes.push(lastUpdate);
+      newFastestTime = true;
+    }
+
+    try {
+      localStorage.setItem('fastestTimes', JSON.stringify(updatedFastestTimes));
+    } catch (e) {
+      console.log("Couldn't save fastestTimes data ", e);
+    }
+
+    this.setState({
+      newFastestTime,
+      fastestTimes: updatedFastestTimes,
+    });
+  };
+
+  finishGame = () => {
+    const gameState = GameStates.STATE_FINISHED;
+    const { timer } = this.state;
+
+    // stop clock.
+    if (timer.interval) {
+      clearInterval(timer.interval);
+    }
+    timer.interval = null;
+    this.checkScores();
+
     this.setState({
       gameState,
+      timer,
     });
   };
 
@@ -315,13 +434,11 @@ export default class Game extends Component {
       levels,
       countDown,
       answers,
-      timer,
+      timer: { lastUpdate },
       numQuestions,
       gameState,
+      fastestTimes,
     } = this.state;
-    const { lastUpdate } = timer;
-    const mins = Math.floor(lastUpdate / (60 * 1000));
-    const secs = Math.floor((lastUpdate - mins * 60 * 1000) / 1000);
     return (
       <div className="Game grid-container">
         <div className="col-1">
@@ -332,6 +449,11 @@ export default class Game extends Component {
           />
         </div>
         <div className="col-2">
+          {gameState === GameStates.STATE_INITIAL && (
+            <div>
+              <HighScores fastestTimes={fastestTimes} />
+            </div>
+          )}
           {gameState === GameStates.STATE_RUNNING && (
             <Question
               firstNum={firstNum}
@@ -343,14 +465,16 @@ export default class Game extends Component {
           )}
           {gameState === GameStates.STATE_RUNNING && (
             <Score
-              mins={mins}
-              secs={secs}
+              time={lastUpdate}
               numAnswered={answers.length}
               numQuestions={numQuestions}
             />
           )}
           {gameState === GameStates.STATE_FINISHED && (
-            <LastGameScore answers={answers} mins={mins} secs={secs} />
+            <div>
+              <LastGameScore answers={answers} time={lastUpdate} />
+              <HighScores fastestTimes={fastestTimes} />
+            </div>
           )}
         </div>
         <div className="col-3">

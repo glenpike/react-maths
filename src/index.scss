@@ -50,6 +50,7 @@ li {
     "col-1"
     "col-2"
     "col-3";
+  grid-row-gap: 0;
 }
 
 @media only screen and (min-width: 800px)  {
@@ -97,21 +98,13 @@ li {
 
   label::after {
     position: absolute;
-    left: 4px;
-    top: 9px;
+    left: 2px;
+    top: -10px;
     content: '';
+    font-weight: bold;
+    font-size: 1.5rem;
+    color: $lightTextColour;
     display: inline-block;
-    height: 8px;
-    width: 18px;
-    border-left: 6px solid;
-    border-bottom: 6px solid;
-    color: $backgroundColour;
-
-    transform: rotate(-45deg);
-  }
-  /*Hide the checkmark by default*/
-  input[type='checkbox'] + label::after {
-    content: none;
   }
 
   input[type='checkbox']:checked + label::before {
@@ -119,7 +112,7 @@ li {
   }
   /*Unhide the checkmark on the checked state*/
   input[type='checkbox']:checked + label::after {
-      content: '';
+    content: '\2713';
   }
   /*Adding focus styles on the outer-box of the fake checkbox*/
   input[type='checkbox']:focus + label::before {
