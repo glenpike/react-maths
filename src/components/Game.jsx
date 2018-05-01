@@ -53,12 +53,12 @@ export class LastGameScore extends Component {
       return total;
     }, 0);
     return (
-      <div className="Score">
-        Congratulations, you got{' '}
-        <span className="Score__value">
+      <div className="LastGameScore">
+        Well done! You got{' '}
+        <span className="LastGameScore__value">
           {numCorrect} out of {answers.length} right
         </span>
-        <br/>in <span className="Score__time">{msToMinsAndSecsStr(time)}</span>!
+        <br/>in <span className="LastGameScore__time">{msToMinsAndSecsStr(time)}</span>!
       </div>
     );
   }
@@ -286,6 +286,7 @@ export default class Game extends Component {
       levels,
       gameState,
       timer,
+      answers: [],
     });
   };
 
@@ -372,12 +373,12 @@ export default class Game extends Component {
   // TODO: seem to have an issue with >5 times!
   updateFastestTimes = () => {
     const { fastestTimes, timer: { lastUpdate } } = this.state;
-    const updatedFastestTimes = fastestTimes.slice(0);
+    let updatedFastestTimes = fastestTimes.slice(0);
     let newFastestTime = false;
     for (let i = 0; i < updatedFastestTimes.length; i++) {
       if (lastUpdate < updatedFastestTimes[i]) {
         updatedFastestTimes.splice(i, 0, lastUpdate);
-        updatedFastestTimes.slice(0, MAX_HIGH_SCORES);
+        updatedFastestTimes = updatedFastestTimes.slice(0, MAX_HIGH_SCORES);
         newFastestTime = true;
         break;
       }

@@ -1,5 +1,6 @@
 //FIXME naming and nesting.
 .Settings {
+  padding-top: $baseFontSize / 2;
   &__levels,
   &__extra {
     list-style-type: none;
@@ -11,7 +12,7 @@
 }
 
 .Question {
-  padding: $baseLineHeight / 2 $baseLineHeight;
+  padding: $baseLineHeight;
   &__number {
     font-weight: 700;
     width: 2rem;
@@ -28,6 +29,10 @@
 
 .Score {
   padding: 0 $baseLineHeight;
+}
+
+.LastGameScore {
+  padding: $baseFontSize $baseLineHeight;
 }
 
 .Answers {
